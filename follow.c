@@ -63,7 +63,7 @@ follow
 {
 
 
-   for (int i = 0 ; i < 100000000 ; i++) {
+   for (int i = 0 ; i < 1000000000 ; i++) {
       pos = array[pos];
    }
 
@@ -74,11 +74,11 @@ follow
 int main(int argc, char **argv ) {
 
 
-//   for (int j = 7 ; j < 31 ; j++) {
-   for (int j = 30 ; j < 31 ; j++) {
+//   for (int j = 4 ; j < 31 ; j++) {
+   for (int j = 16 ; j < 17 ; j++) {
 
 //      int sz = 1 << j;
-      int sz = 15728640/4;
+      int sz = 15728640 / 4;
       int *array = malloc(sz * sizeof(int));
       if (array == NULL) crash();
 
@@ -96,7 +96,8 @@ int main(int argc, char **argv ) {
 
       free(array);
 
-      fprintf(stdout, "%f\n", (double)(end-start) / CLOCKS_PER_SEC);
+      fprintf(stdout, "%d\t%f\n", j, (double)(end-start) / CLOCKS_PER_SEC);
+      if (a < 0) { fprintf(stdout, "err\n"); }
 
    }
 
