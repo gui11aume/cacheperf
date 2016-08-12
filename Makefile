@@ -1,7 +1,8 @@
-follow: follow.c
-	gcc -std=gnu99 -O0 -g bissect.c -o follow
-	valgrind --tool=cachegrind
-	cg_annotate --auto=yes cachegrind.*
+go: follow.o cacheperf.c
+	gcc -std=gnu99 -O0 -g cacheperf.c follow.o -o go
 
-bissect: bissect.c
-	gcc -std=gnu99 -O0 -g bissect.c -o bis
+follow.o: follow.c 
+	gcc -std=gnu99 -O2 -g -c follow.c
+
+clean:
+	rm go

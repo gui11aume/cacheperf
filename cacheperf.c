@@ -5,6 +5,10 @@
 
 #define MAXCACHENB 8
 
+
+int follow (int, int *);
+
+
 void crash (void) {
    fprintf(stderr, "memory error\n");
    exit(EXIT_FAILURE);
@@ -52,24 +56,6 @@ generate_one_cycle_perm
    free(new);
 
    return array;
-
-}
-
-
-int
-follow
-(
-   int   pos,
-   int * array
-)
-{
-   // TODO: replace by assembly code.
-
-   for (int i = 0 ; i < 1000000000 ; i++) {
-      pos = array[pos];
-   }
-
-   return pos;
 
 }
 
@@ -140,15 +126,22 @@ get_cache_sizes (
 
 int main(int argc, char **argv ) {
 
-   // Working variables.
-   int j;
-   double p;
 
    // Timing estimates.
    double time[MAXCACHENB+1] = {0};
    size_t cache_sizes[MAXCACHENB+2] = {0};
 
    get_cache_sizes(cache_sizes);
+   
+   if (cache_sizes[0] == 0) {
+      fprintf(stderr, "cannot find cache information\n");
+      exit(EXIT_FAILURE);
+   }
+
+   for (int j = 0 ; cache_sizes[j] > 0 ; j++) {
+      fprintf(stdout, "L%d cache size: %ld\n",
+            j+1, cache_sizes[j]);
+   }
 
    // Add an entry that is 5 times larger than
    // the last level cache.
@@ -165,11 +158,6 @@ int main(int argc, char **argv ) {
       srand48(123);
       generate_one_cycle_perm(sz, array);
       
-      // Read from file.
-//      FILE *f = fopen("array.dat", "r");
-//      if (f == NULL) exit(EXIT_FAILURE);
-//      fread(array, sizeof(int), sz, f);
-
       clock_t start = clock();
       int a = follow(lrand48() % sz, array);
       clock_t end = clock();
@@ -181,11 +169,13 @@ int main(int argc, char **argv ) {
 
    }
 
+   double p; // Proportion of cache hits at the lower level.
+   int j;
+
    double latency = time[0];
    printf("L1 hit:  ~ %.2f ns\n", latency);
 
    for (j = 1 ; cache_sizes[j+1] > 0 ; j++) {
-      // Proportion of cache hits at the lower level.
       p = (double) cache_sizes[j-1] / (double) cache_sizes[j];
       latency = (time[j] - (latency * p)) / (1-p);
       printf("L%d hit:  ~ %.2f ns\n", j+1, latency);
