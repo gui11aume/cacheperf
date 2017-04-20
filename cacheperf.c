@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "mt.h"
 
 #define MAXCACHENB 8
 
@@ -35,7 +36,7 @@ generate_one_cycle_perm
    for (int i = nelem-1 ; i > 0 ; i-- ) {
       // Take an element between 0 and i at random,
       // and swap it with element at position i.
-      int j = lrand48() % (i+1);
+      int j = randomMT() % (i+1);
       int tmp = new[i];
       new[i] = new[j];
       new[j] = tmp;
@@ -155,11 +156,11 @@ int main(int argc, char **argv ) {
       int *array = malloc(sz * sizeof(int));
       if (array == NULL) crash();
 
-      srand48(123);
+      seedMT(123);
       generate_one_cycle_perm(sz, array);
       
       clock_t start = clock();
-      int a = follow(lrand48() % sz, array);
+      int a = follow(randomMT() % sz, array);
       clock_t end = clock();
 
       free(array);
